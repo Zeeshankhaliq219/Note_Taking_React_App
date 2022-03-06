@@ -81,23 +81,26 @@ function App() {
   };
 
   return (
-    <div>
-      <form onSubmit={isEditing ? handleUpdateNote : handleAddNoteForm}>
+    <div className="App">
+      <form className="main" onSubmit={isEditing ? handleUpdateNote : handleAddNoteForm}>
         <input
+        className="input"
           type="text"
           required
           onChange={handleNoteInputChange}
           placeholder="Please add text here"
           value={inputText}
         />
-        <button type="submit">{isEditing ? "Update Note" : "Add note"}</button>
-        {isEditing && <button onClick={resetStates}>Cancel</button>}
+        <button className="addButton" type="submit">{isEditing ? "Update Note" : "Add note"}</button>
+        {isEditing && <button className="addButton" onClick={resetStates}>Cancel</button>}
       </form>
       {notes.map((note, i) => (
         <div key={note.id}>
-          <h1>{note.text}</h1>
-          <button onClick={() => handleEdit(note.id)}>Edit</button>
-          <button onClick={() => handleDelete(note.id)}>Delete</button>
+          <div className="textparent">
+          <h1 className="text">{note.text}</h1>
+          </div>
+          <button className="btn" onClick={() => handleEdit(note.id)}>Edit</button>
+          <button className="btn" onClick={() => handleDelete(note.id)}>Delete</button>
         </div>
       ))}
     </div>
