@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { Note } from "./componets/note_types";
+import "./App.css"
 
 function App() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [inputText, setInputText] = useState<string>("");
+  const [selectedNoteId, setSelectedNoteId] = useState<string>("");
+  const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const handleAddNoteForm = (event: React.FormEvent) => {
     event.preventDefault();
@@ -26,6 +29,7 @@ function App() {
     setNotes([...notes, noteObj]);
     // notes.push(noteObj);
     // setNotes(notes);
+    resetStates();
   };
 
   const handleNoteInputChange: React.ChangeEventHandler<HTMLInputElement> = (
@@ -37,6 +41,19 @@ function App() {
 
   const handleEdit = (id: string) => {
     console.log("handleEdit");
+    setIsEditing(true);
+    // Get the note which is editing
+    // Input field text changed to the edited note
+    for (let index = 0; index < notes.length; index++) {
+      const note = notes[index];
+      if (note.id === id) {
+        setInputText(note.text);
+        setSelectedNoteId(note.id);
+        break;
+      }
+    }
+    // button text updated from add to update
+    // Instead of adding new note it should update the note
   };
 
   const handleDelete = (id: string) => {
@@ -44,14 +61,40 @@ function App() {
     setNotes(updatedArr);
   };
 
+  const resetStates = () => {
+    setIsEditing(false);
+    setInputText("");
+    setSelectedNoteId("");
+  };
+
+  const handleUpdateNote: React.FormEventHandler<HTMLFormElement> = (event) => {
+    event.preventDefault();
+    const updatedArr = notes.map((note) => {
+      if (note.id === selectedNoteId) {
+        note.text = inputText;
+      }
+      return note;
+    });
+
+    setNotes(updatedArr);
+    resetStates();
+  };
+
   return (
     <div>
-      <form onSubmit={handleAddNoteForm}>
-        <input type="text" required onChange={handleNoteInputChange} />
-        <button type="submit">Add note</button>
+      <form onSubmit={isEditing ? handleUpdateNote : handleAddNoteForm}>
+        <input
+          type="text"
+          required
+          onChange={handleNoteInputChange}
+          placeholder="Please add text here"
+          value={inputText}
+        />
+        <button type="submit">{isEditing ? "Update Note" : "Add note"}</button>
+        {isEditing && <button onClick={resetStates}>Cancel</button>}
       </form>
       {notes.map((note, i) => (
-        <div>
+        <div key={note.id}>
           <h1>{note.text}</h1>
           <button onClick={() => handleEdit(note.id)}>Edit</button>
           <button onClick={() => handleDelete(note.id)}>Delete</button>
